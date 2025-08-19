@@ -36,6 +36,52 @@ CREATE TABLE loan (
   -- If present: , loan_amount NUMERIC(12,2)
 );
 
+*****
+-- -----------------------
+-- Insert sample customers
+-- -----------------------
+INSERT INTO customers VALUES
+(1, 'Rahul',  'Sharma', 'rahul@gmail.com', '9876543210', 'Delhi',      '1995-05-12'),
+(2, 'Priya',  'Patel',  'priya@gmail.com', '9876500001', 'Mumbai',     '1997-08-20'),
+(3, 'Amit',   'Verma',  'amit@gmail.com',  '9876500002', 'Pune',       '1990-01-15'),
+(4, 'Sneha',  'Iyer',   'sneha@gmail.com', '9876500003', 'Chennai',    '1998-11-10'),
+(5, 'John',   'Doe',    'john@gmail.com',  '9876500004', 'London',     '1988-03-25'),
+(6, 'Anita',  'Kumar',  'anita@gmail.com', '9876500005', 'Delhi',      '2000-07-30');
+
+-- -----------------------
+-- Insert branches
+-- -----------------------
+INSERT INTO branch VALUES
+(101, 'Connaught Branch',  'Delhi'),
+(102, 'Andheri Branch',    'Mumbai'),
+(103, 'Shivaji Branch',    'Pune'),
+(104, 'Anna Nagar Branch', 'Chennai'),
+(105, 'Heathrow Branch',   'London');
+
+-- -----------------------
+-- Insert accounts
+-- -----------------------
+INSERT INTO accounts VALUES
+(201, 'saving',   15000, '2023-06-10', 1),
+(202, 'current',   5000, '2023-08-05', 2),
+(203, 'saving',   25000, '2022-09-01', 3),
+(204, 'saving',    8000, '2025-06-01', 4),  -- within last 3 months
+(205, 'current',  12000, '2025-07-10', 4),  -- within last 3 months
+(206, 'saving',   30000, '2020-04-15', 5),
+(207, 'saving',   1000,  '2025-06-15', 6);  -- within last 3 months
+
+-- -----------------------
+-- Insert loans
+-- -----------------------
+INSERT INTO loan VALUES
+(301, 'home',   1, 201, 101),  -- Rahul in Delhi
+(302, 'car',    2, 202, 102),  -- Priya in Mumbai
+(303, 'study',  3, 203, 103),  -- Amit in Pune
+(304, 'home',   4, 204, 104),  -- Sneha in Chennai
+(305, 'car',    4, 205, 102),  -- Sneha also has loan in Mumbai (Q12 case)
+(306, 'car',    6, 207, 101);  -- Anita loan in Delhi
+
+****
 -- Q1. Change account_balance from string to numeric
 ALTER TABLE accounts
 ALTER COLUMN account_balance TYPE NUMERIC(12,2)
