@@ -1,0 +1,141 @@
+-- Customers
+CREATE TABLE customers (
+  customer_id   INT PRIMARY KEY,
+  first_name    TEXT NOT NULL,
+  last_name     TEXT NOT NULL,
+  email         TEXT UNIQUE,
+  phone         TEXT,
+  city          TEXT,
+  dob           DATE
+);
+
+-- Branch
+CREATE TABLE branch (
+  branch_id     INT PRIMARY KEY,
+  branch_name   TEXT NOT NULL,
+  city          TEXT
+);
+
+-- Accounts
+CREATE TABLE accounts (
+  account_id       INT PRIMARY KEY,
+  account_type     TEXT NOT NULL,           -- e.g., 'saving', 'current'
+  account_balance  TEXT NOT NULL,           -- Q1 converts this to numeric
+  dop              DATE,                    -- date of opening
+  customer_id      INT NOT NULL REFERENCES customers(customer_id)
+  -- If your schema has it, add: branch_id INT REFERENCES branch(branch_id)
+);
+
+-- Loan
+CREATE TABLE loan (
+  loan_id       INT PRIMARY KEY,
+  loan_type     TEXT,
+  customer_id   INT NOT NULL REFERENCES customers(customer_id),
+  account_id    INT NOT NULL REFERENCES accounts(account_id),
+  branch_id     INT NOT NULL REFERENCES branch(branch_id)
+  -- If present: , loan_amount NUMERIC(12,2)
+);
+
+-- Q1. Change account_balance from string to numeric
+ALTER TABLE accounts
+ALTER COLUMN account_balance TYPE NUMERIC(12,2)
+USING account_balance::NUMERIC;
+
+-- Q2. Customer id, first name, account balance; sort by year of DOB, then name
+SELECT c.customer_id, c.first_name, a.account_balance
+FROM customers c
+JOIN accounts a ON c.customer_id = a.customer_id
+ORDER BY EXTRACT(YEAR FROM c.dob), c.first_name;
+
+-- Q3. Count customers from India (using city as proxy)
+SELECT COUNT(*) AS cust_count
+FROM customers
+WHERE city IN ('Delhi','Mumbai','Pune','Chennai','Bengaluru','Hyderabad','Kolkata');
+
+-- Q4. Customers who do not have a loan
+SELECT c.*
+FROM customers c
+LEFT JOIN loan l ON c.customer_id = l.customer_id
+WHERE l.loan_id IS NULL;
+
+-- Q5. City name and count of branches in that city
+SELECT city, COUNT(*) AS branch_count
+FROM branch
+GROUP BY city
+ORDER BY city;
+
+-- Q6. Customer(s) with highest number of loans
+WITH loan_counts AS (
+  SELECT customer_id, COUNT(*) AS loan_count
+  FROM loan
+  GROUP BY customer_id
+)
+SELECT c.customer_id, c.first_name, c.last_name, lc.loan_count
+FROM customers c
+JOIN loan_counts lc ON c.customer_id = lc.customer_id
+WHERE lc.loan_count = (SELECT MAX(loan_count) FROM loan_counts);
+
+-- Q7. Customers who opened an account in last 3 months
+SELECT DISTINCT c.*
+FROM customers c
+JOIN accounts a ON c.customer_id = a.customer_id
+WHERE a.dop >= CURRENT_DATE - INTERVAL '3 months';
+
+-- Q8. Account id, customer name for saving accounts
+SELECT a.account_id, c.first_name, c.last_name
+FROM accounts a
+JOIN customers c ON a.customer_id = c.customer_id
+WHERE LOWER(a.account_type) = 'saving';
+
+-- Q9. Customer id, first name, branch id for people with loans
+SELECT c.customer_id, c.first_name, l.branch_id
+FROM customers c
+JOIN loan l ON c.customer_id = l.customer_id;
+
+-- Q10. Customer id, full name, account id where balance < 10000
+SELECT c.customer_id,
+       c.first_name || ' ' || c.last_name AS full_name,
+       a.account_id
+FROM customers c
+JOIN accounts a ON c.customer_id = a.customer_id
+WHERE a.account_balance < 10000;
+
+-- Q11. Customer id, name, customer city and branch city when different
+SELECT DISTINCT c.customer_id, c.first_name, c.city AS customer_city, b.city AS branch_city
+FROM customers c
+JOIN loan l ON c.customer_id = l.customer_id
+JOIN branch b ON l.branch_id = b.branch_id
+WHERE c.city IS DISTINCT FROM b.city;
+
+-- Q12. Customers who have taken loans from more than one branch
+SELECT c.customer_id, c.first_name, c.last_name
+FROM customers c
+JOIN loan l ON c.customer_id = l.customer_id
+GROUP BY c.customer_id, c.first_name, c.last_name
+HAVING COUNT(DISTINCT l.branch_id) > 1;
+
+-- Q13. Citywise, branchwise count of accounts (show 0 if none)
+SELECT b.city, b.branch_name, COUNT(DISTINCT l.account_id) AS account_count
+FROM branch b
+LEFT JOIN loan l ON b.branch_id = l.branch_id
+GROUP BY b.city, b.branch_name
+ORDER BY b.city, b.branch_name;
+
+-- Q14. Customers who have more than one account
+SELECT c.customer_id, c.first_name, c.last_name, COUNT(a.account_id) AS account_count
+FROM customers c
+JOIN accounts a ON c.customer_id = a.customer_id
+GROUP BY c.customer_id, c.first_name, c.last_name
+HAVING COUNT(a.account_id) > 1
+ORDER BY account_count DESC;
+
+-- Q15. Branch city with maximum customers
+WITH branch_counts AS (
+  SELECT b.city, COUNT(DISTINCT l.customer_id) AS customer_count
+  FROM branch b
+  LEFT JOIN loan l ON b.branch_id = l.branch_id
+  GROUP BY b.city
+)
+SELECT city, customer_count
+FROM branch_counts
+WHERE customer_count = (SELECT MAX(customer_count) FROM branch_counts);
