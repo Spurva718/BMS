@@ -1,25 +1,4 @@
-package com.example.customerapp.entity; // Package for domain/entity classes
-this.id = id; // Assign provided id
-this.name = name; // Assign provided name
-this.email = email; // Assign provided email
-this.phone = phone; // Assign provided phone
-}
 
-
-public Customer(String name, String email, String phone) { // Constructor for inserts (no id yet)
-this.name = name; // Assign name
-this.email = email; // Assign email
-this.phone = phone; // Assign phone
-}
-
-
-public int getId() { // Getter for id
-return id; // Return id field
-}
-
-
-public void setId(int id) { // Setter for id (used after insert)
-this.id = id; // Set id field
 }
 
 
