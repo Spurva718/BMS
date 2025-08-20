@@ -349,3 +349,158 @@ public class App {
         }
     }
 }
+
+*** main
+package com.bank.main;
+
+import com.bank.entity.Customer;
+import com.bank.exception.CustomerNotFoundException;
+import com.bank.exception.DataAccessException;
+import com.bank.service.CustomerService;
+import com.bank.service.CustomerServiceImpl;
+
+import java.util.List;
+import java.util.Scanner;
+
+public class App {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        CustomerService service = new CustomerServiceImpl();
+
+        while (true) {
+            System.out.println("\n=== Customer CRUD Menu ===");
+            System.out.println("1. Add Customer");
+            System.out.println("2. List Customers");
+            System.out.println("3. Get Customer by ID");
+            System.out.println("4. Update Customer");
+            System.out.println("5. Delete Customer");
+            System.out.println("0. Exit");
+            System.out.print("Enter choice: ");
+
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            try {
+                switch (choice) {
+                    case 1 -> {
+                        System.out.print("Enter name: ");
+                        String name = sc.nextLine();
+                        System.out.print("Enter email: ");
+                        String email = sc.nextLine();
+                        System.out.print("Enter phone: ");
+                        String phone = sc.nextLine();
+
+                        Customer newCustomer = new Customer(name, email, phone);
+                        Customer saved = service.addCustomer(newCustomer);
+                        System.out.println("✅ Added: " + saved);
+                    }
+                    case 2 -> {
+                        List<Customer> customers = service.getAllCustomers();
+                        if (customers.isEmpty()) {
+                            System.out.println("No customers found.");
+                        } else {
+                            customers.forEach(System.out::println);
+                        }
+                    }
+                    case 3 -> {
+                        System.out.print("Enter ID: ");
+                        int id = sc.nextInt();
+                        sc.nextLine();
+                        Customer c = service.getCustomerById(id);
+                        System.out.println("Found: " + c);
+                    }
+                    case 4 -> {
+                        System.out.print("Enter ID to update: ");
+                        int id = sc.nextInt();
+                        sc.nextLine();
+                        System.out.print("Enter new name: ");
+                        String name = sc.nextLine();
+                        System.out.print("Enter new email: ");
+                        String email = sc.nextLine();
+                        System.out.print("Enter new phone: ");
+                        String phone = sc.nextLine();
+
+                        Customer updated = service.updateCustomer(id, new Customer(name, email, phone));
+                        System.out.println("✅ Updated: " + updated);
+                    }
+                    case 5 -> {
+                        System.out.print("Enter ID to delete: ");
+                        int id = sc.nextInt();
+                        sc.nextLine();
+                        boolean deleted = service.deleteCustomer(id);
+                        if (deleted) {
+                            System.out.println("✅ Customer deleted");
+                        } else {
+                            System.out.println("⚠️ Customer not found");
+                        }
+                    }
+                    case 0 -> {
+                        System.out.println("Bye!");
+                        return;
+                    }
+                    default -> System.out.println("Invalid choice, try again.");
+                }
+            } catch (CustomerNotFoundException e) {
+                System.out.println("⚠️ Customer Not Found: " + e.getMessage());
+            } catch (DataAccessException e) {
+                System.out.println("⚠️ Database Error: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("⚠️ Unexpected Error: " + e.getMessage());
+            }
+        }
+    }
+}
+
+service
+package com.bank.service;
+
+import com.bank.entity.Customer;
+import com.bank.exception.CustomerNotFoundException;
+import com.bank.exception.DataAccessException;
+import com.bank.repository.CustomerRepository;
+
+import java.util.List;
+
+public class CustomerServiceImpl implements CustomerService {
+    private final CustomerRepository repo = new CustomerRepository();
+
+    @Override
+    public Customer addCustomer(Customer customer) {
+        return repo.insert(customer);  // repo throws DataAccessException if DB issue
+    }
+
+    @Override
+    public List<Customer> getAllCustomers() {
+        return repo.findAll();  // repo throws DataAccessException if DB issue
+    }
+
+    @Override
+    public Customer getCustomerById(int id) {
+        Customer c = repo.findById(id);
+        if (c == null) {
+            throw new CustomerNotFoundException("No customer found with ID " + id);
+        }
+        return c;
+    }
+
+    @Override
+    public Customer updateCustomer(int id, Customer updated) {
+        Customer c = repo.findById(id);
+        if (c == null) {
+            throw new CustomerNotFoundException("Cannot update. No customer with ID " + id);
+        }
+        // If found → update
+        updated.setId(id);
+        return repo.update(updated);
+    }
+
+    @Override
+    public boolean deleteCustomer(int id) {
+        Customer c = repo.findById(id);
+        if (c == null) {
+            throw new CustomerNotFoundException("Cannot delete. No customer with ID " + id);
+        }
+        return repo.delete(id); // If DB fails, DataAccessException is thrown
+    }
+}
+
