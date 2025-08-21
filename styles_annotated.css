@@ -1,0 +1,138 @@
+/* -------- CSS VARIABLES: easy theme colors -------- */
+:root{
+  --brand-1:#6a85f1;       /* primary accent color */
+  --brand-2:#72edf2;       /* secondary accent for gradient */
+  --text:#2e2e2e;          /* default text color */
+  --muted:#6b7280;         /* lighter text color */
+  --danger:#dc3545;        /* red used for errors and reset button */
+  --success:#28a745;       /* green used for submit button */
+  --card:#ffffff;          /* white card background */
+}
+
+/* Include padding/border inside width/height calculations */
+*{ box-sizing:border-box; }
+
+/* ----- PAGE BACKGROUND + TYPOGRAPHY ----- */
+body{
+  margin:0; /* remove default margins */
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; /* modern font stack */
+  color:var(--text); /* text color */
+  background: linear-gradient(115deg, var(--brand-2), var(--brand-1)); /* nice gradient bg */
+  min-height:100vh; /* make page at least full viewport height */
+  display:flex; /* center the card */
+  align-items:center; /* vertical centering */
+  justify-content:center; /* horizontal centering */
+  padding:24px; /* space around card on small screens */
+}
+
+/* limit page width on big screens */
+.page{ width:100%; max-width:900px; }
+
+/* The white card that holds the form */
+.form-card{
+  background:var(--card);
+  border-radius:16px; /* soft rounded corners */
+  padding:28px;       /* inner space */
+  box-shadow: 0 20px 40px rgba(0,0,0,.15); /* drop shadow */
+}
+
+/* Headings and helper text */
+h1{
+  margin:0 0 6px;
+  font-size:28px;
+}
+.lead{
+  margin:0 0 18px;
+  color:var(--muted);
+}
+
+/* Two-column responsive grid for fields */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr)); /* 2 equal columns */
+  gap:16px 20px; /* row and column gaps */
+}
+
+/* Generic field wrapper and a helper to span full width */
+.field{ display:flex; flex-direction:column; }
+.field.full{ grid-column:1 / -1; }
+
+/* Labels */
+label, .label{
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+/* Inputs & select share the same look */
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="date"],
+input[type="time"],
+input[type="week"],
+input[type="month"],
+select{
+  width:100%;
+  padding:12px 12px;
+  border:1px solid #d1d5db; /* light gray border */
+  border-radius:10px;
+  outline:none; /* we will provide our own focus ring */
+  transition: border-color .2s, box-shadow .2s; /* smooth focus effect */
+  background:#fff;
+}
+
+/* Color input needs height to look like other inputs */
+input[type="color"]{
+  height:44px;
+  padding:0;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  background:#fff;
+}
+
+/* Focus styles for accessibility */
+input:focus, select:focus{
+  border-color: var(--brand-1);
+  box-shadow: 0 0 0 3px rgba(106,133,241,.25); /* blue glow */
+}
+
+/* Small helper text below inputs */
+.hint{ color:var(--muted); font-size:12px; margin-top:6px; }
+
+/* Radio/checkbox options in a row that wraps on small screens */
+.options{ display:flex; gap:16px; flex-wrap:wrap; }
+.options label{ font-weight:500; }
+
+/* When an input is invalid and the user focuses it, show red highlight */
+input:invalid:focus, select:invalid:focus{
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(220,53,69,.25);
+}
+
+/* Buttons row */
+.actions{ margin-top:22px; display:flex; gap:12px; }
+
+/* Base button */
+.btn{
+  appearance:none;        /* consistent look across browsers */
+  border:none;
+  border-radius:10px;
+  padding:12px 18px;
+  font-weight:700;
+  cursor:pointer;
+  transition: transform .05s ease, filter .2s ease;
+  color:#fff;             /* white text */
+}
+.btn:active{ transform: translateY(1px); } /* press effect */
+
+/* Submit and reset color schemes */
+.submit{ background:var(--success); }
+.submit:hover{ filter:brightness(0.95); }
+.reset{ background:var(--danger); }
+.reset:hover{ filter:brightness(0.95); }
+
+/* Single-column layout on phones */
+@media (max-width: 640px){
+  .grid{ grid-template-columns: 1fr; }
+  .form-card{ padding:20px; }
+}

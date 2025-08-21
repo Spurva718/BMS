@@ -1,0 +1,122 @@
+<!DOCTYPE html> <!-- HTML5 doctype tells the browser modern rules -->
+<html lang="en"> <!-- Language of the page is English -->
+<head> <!-- Head contains metadata and links -->
+  <meta charset="UTF-8"> <!-- Character encoding so all characters show correctly -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Responsive scaling on mobiles -->
+  <title>User Registration Form</title> <!-- Browser tab title -->
+
+  <link rel="stylesheet" href="styles.css"> <!-- Connect external CSS file -->
+
+  <!-- Keep Bootstrap commented for now. You can uncomment later to use it. -->
+  <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+</head>
+<body> <!-- All visible content goes inside body -->
+  <main class="page"> <!-- Main landmark for accessibility -->
+    <section class="form-card"> <!-- White card that holds the form -->
+      <h1>User Registration</h1> <!-- Page heading -->
+      <p class="lead">All fields are required.</p> <!-- Short helper text -->
+
+      <!-- The form. Action is the page to open after submit. GET puts data in URL. -->
+      <form action="welcome.html" method="get" autocomplete="on" novalidate>
+        <div class="grid"> <!-- Grid layout for two columns -->
+
+          <div class="field"> <!-- First name field wrapper -->
+            <label for="fname">First Name *</label> <!-- Clicking label focuses input -->
+            <input type="text" id="fname" name="fname" pattern="[A-Za-z]+"
+                   placeholder="Enter first name" required> <!-- Only letters allowed -->
+            <small class="hint">Alphabets only</small> <!-- Helper text -->
+          </div>
+
+          <div class="field"> <!-- Last name wrapper -->
+            <label for="lname">Last Name *</label>
+            <input type="text" id="lname" name="lname" pattern="[A-Za-z]+"
+                   placeholder="Enter last name" required>
+            <small class="hint">Alphabets only</small>
+          </div>
+
+          <div class="field full"> <!-- Radio button group -->
+            <span class="label">Gender *</span> <!-- Text label for group -->
+            <div class="options"> <!-- Horizontal layout for options -->
+              <label><input type="radio" name="gender" value="Male" required> Male</label>
+              <label><input type="radio" name="gender" value="Female"> Female</label>
+              <label><input type="radio" name="gender" value="Others"> Others</label>
+            </div>
+          </div>
+
+          <div class="field full"> <!-- Checkbox group -->
+            <span class="label">Languages Known * (pick at least one)</span>
+            <div class="options">
+              <label><input type="checkbox" name="langs" value="HTML" required> HTML</label> <!-- 'required' on one checkbox makes the group required -->
+              <label><input type="checkbox" name="langs" value="CSS"> CSS</label>
+              <label><input type="checkbox" name="langs" value="JS"> JS</label>
+            </div>
+          </div>
+
+          <div class="field"> <!-- Address dropdown -->
+            <label for="address">Address *</label>
+            <select id="address" name="address" required> <!-- Select element -->
+              <option value="" selected disabled>-- Select --</option> <!-- Placeholder option -->
+              <option value="Bangalore">Bangalore</option>
+              <option value="Mysore">Mysore</option>
+              <option value="Kerala">Kerala</option>
+            </select>
+          </div>
+
+          <div class="field"> <!-- Free text cities lived in -->
+            <label for="cities">Cities lived in *</label>
+            <input type="text" id="cities" name="cities"
+                   placeholder="e.g., Chennai, Pune" required>
+          </div>
+
+          <div class="field"> <!-- Phone number -->
+            <label for="contact">Contact Number *</label>
+            <input type="tel" id="contact" name="contact" pattern="[0-9]{10}"
+                   inputmode="numeric" placeholder="10 digit number" required> <!-- Pattern forces 10 digits -->
+            <small class="hint">Exactly 10 digits</small>
+          </div>
+
+          <div class="field"> <!-- Favorite color -->
+            <label for="color">My favorite color is *</label>
+            <input type="color" id="color" name="color" required> <!-- Native color picker -->
+          </div>
+
+          <div class="field"> <!-- Date -->
+            <label for="date">Date *</label>
+            <input type="date" id="date" name="date" required>
+          </div>
+
+          <div class="field"> <!-- Birthday -->
+            <label for="birthday">Birthday *</label>
+            <input type="date" id="birthday" name="birthday" required>
+          </div>
+
+          <div class="field"> <!-- Time -->
+            <label for="time">Time is *</label>
+            <input type="time" id="time" name="time" required>
+          </div>
+
+          <div class="field"> <!-- Week -->
+            <label for="week">Week is *</label>
+            <input type="week" id="week" name="week" required>
+          </div>
+
+          <div class="field"> <!-- Month -->
+            <label for="month">Month is *</label>
+            <input type="month" id="month" name="month" required>
+          </div>
+
+          <div class="field full"> <!-- Email -->
+            <label for="email">Email ID *</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required> <!-- Browser validates email format -->
+          </div>
+        </div> <!-- End grid -->
+
+        <div class="actions"> <!-- Buttons row -->
+          <button type="submit" class="btn submit">Submit</button> <!-- Green submit button -->
+          <button type="reset" class="btn reset">Reset</button> <!-- Red reset button clears the form -->
+        </div>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

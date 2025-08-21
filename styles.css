@@ -1,0 +1,124 @@
+/* Page background and basic fonts */
+:root{
+  --brand-1:#6a85f1;
+  --brand-2:#72edf2;
+  --text:#2e2e2e;
+  --muted:#6b7280;
+  --danger:#dc3545;
+  --success:#28a745;
+  --card:#ffffff;
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+  background: linear-gradient(115deg, var(--brand-2), var(--brand-1));
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+.page{ width:100%; max-width:900px; }
+
+.form-card{
+  background:var(--card);
+  border-radius:16px;
+  padding:28px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.15);
+}
+
+h1{
+  margin:0 0 6px;
+  font-size:28px;
+}
+
+.lead{
+  margin:0 0 18px;
+  color:var(--muted);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap:16px 20px;
+}
+
+.field{ display:flex; flex-direction:column; }
+.field.full{ grid-column:1 / -1; }
+
+label, .label{
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="date"],
+input[type="time"],
+input[type="week"],
+input[type="month"],
+select{
+  width:100%;
+  padding:12px 12px;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  outline:none;
+  transition: border-color .2s, box-shadow .2s;
+  background:#fff;
+}
+
+input[type="color"]{
+  height:44px;
+  padding:0;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  background:#fff;
+}
+
+input:focus, select:focus{
+  border-color: var(--brand-1);
+  box-shadow: 0 0 0 3px rgba(106,133,241,.25);
+}
+
+.hint{ color:var(--muted); font-size:12px; margin-top:6px; }
+
+.options{ display:flex; gap:16px; flex-wrap:wrap; }
+.options label{ font-weight:500; }
+
+/* Show red border when invalid and user has interacted */
+input:invalid:focus, select:invalid:focus{
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(220,53,69,.25);
+}
+
+/* Buttons */
+.actions{ margin-top:22px; display:flex; gap:12px; }
+.btn{
+  appearance:none;
+  border:none;
+  border-radius:10px;
+  padding:12px 18px;
+  font-weight:700;
+  cursor:pointer;
+  transition: transform .05s ease, filter .2s ease;
+  color:#fff;
+}
+.btn:active{ transform: translateY(1px); }
+
+.submit{ background:var(--success); }
+.submit:hover{ filter:brightness(0.95); }
+
+.reset{ background:var(--danger); }
+.reset:hover{ filter:brightness(0.95); }
+
+/* Mobile */
+@media (max-width: 640px){
+  .grid{ grid-template-columns: 1fr; }
+  .form-card{ padding:20px; }
+}
