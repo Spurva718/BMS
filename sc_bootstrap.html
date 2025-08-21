@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Registration Form</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+  <h2 class="text-center mb-4">User Registration Form</h2>
+
+  <!-- Form starts -->
+  <form action="welcome.html" method="get" class="p-4 border rounded bg-white">
+
+    <!-- First Name -->
+    <div class="mb-3">
+      <label for="fname" class="form-label">First Name</label>
+      <input type="text" class="form-control" id="fname" name="fname"
+             placeholder="Enter your first name"
+             pattern="[A-Za-z]+" required>
+    </div>
+
+    <!-- Last Name -->
+    <div class="mb-3">
+      <label for="lname" class="form-label">Last Name</label>
+      <input type="text" class="form-control" id="lname" name="lname"
+             placeholder="Enter your last name"
+             pattern="[A-Za-z]+" required>
+    </div>
+
+    <!-- Gender -->
+    <div class="mb-3">
+      <label class="form-label">Gender</label><br>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="gender" value="Male" required>
+        <label class="form-check-label">Male</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="gender" value="Female">
+        <label class="form-check-label">Female</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="gender" value="Others">
+        <label class="form-check-label">Others</label>
+      </div>
+    </div>
+
+    <!-- Languages Known -->
+    <div class="mb-3">
+      <label class="form-label">Languages Known</label><br>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" name="lang" value="HTML">
+        <label class="form-check-label">HTML</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" name="lang" value="CSS">
+        <label class="form-check-label">CSS</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" name="lang" value="JS">
+        <label class="form-check-label">JS</label>
+      </div>
+    </div>
+
+    <!-- Address -->
+    <div class="mb-3">
+      <label for="address" class="form-label">Address</label>
+      <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+    </div>
+
+    <!-- Cities lived in -->
+    <div class="mb-3">
+      <label for="city" class="form-label">Cities lived in</label>
+      <select class="form-select" id="city" name="city" required>
+        <option value="">Select a city</option>
+        <option>Bangalore</option>
+        <option>Mysore</option>
+        <option>Kerala</option>
+        <option>Chennai</option>
+      </select>
+    </div>
+
+    <!-- Contact Number -->
+    <div class="mb-3">
+      <label for="contact" class="form-label">Contact Number</label>
+      <input type="tel" class="form-control" id="contact" name="contact"
+             placeholder="10 digit number"
+             pattern="[0-9]{10}" required>
+    </div>
+
+    <!-- Email -->
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" name="email"
+             placeholder="Enter your email" required>
+    </div>
+
+    <!-- Favorite Color -->
+    <div class="mb-3">
+      <label for="color" class="form-label">Favorite Color</label>
+      <input type="color" class="form-control form-control-color" id="color" name="color" required>
+    </div>
+
+    <!-- Date -->
+    <div class="mb-3">
+      <label for="date" class="form-label">Date</label>
+      <input type="date" class="form-control" id="date" name="date" required>
+    </div>
+
+    <!-- Birthday -->
+    <div class="mb-3">
+      <label for="dob" class="form-label">Birthday</label>
+      <input type="date" class="form-control" id="dob" name="dob" required>
+    </div>
+
+    <!-- Time -->
+    <div class="mb-3">
+      <label for="time" class="form-label">Time</label>
+      <input type="time" class="form-control" id="time" name="time" required>
+    </div>
+
+    <!-- Week -->
+    <div class="mb-3">
+      <label for="week" class="form-label">Week</label>
+      <input type="week" class="form-control" id="week" name="week" required>
+    </div>
+
+    <!-- Month -->
+    <div class="mb-3">
+      <label for="month" class="form-label">Month</label>
+      <input type="month" class="form-control" id="month" name="month" required>
+    </div>
+
+    <!-- Buttons -->
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="reset" class="btn btn-secondary">Reset</button>
+  </form>
+</div>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome</title>
+</head>
+<body>
+  <h2 style="text-align:center; margin-top:50px;">Welcome User</h2>
+</body>
+</html>
+
+
