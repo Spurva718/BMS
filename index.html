@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook Login</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="row align-items-center">
+    
+    <!-- LEFT SIDE -->
+    <div class="col-md-6 mt-5">
+      <h1 class="fb-title">facebook</h1>
+      <p class="fb-tagline">Facebook helps you connect and share<br> with the people in your life.</p>
+    </div>
+    
+    <!-- RIGHT SIDE: Login -->
+    <div class="col-md-6">
+      <div class="login-box p-4">
+        <form id="loginForm">
+          <!-- Email/Phone -->
+          <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+            <input type="text" class="form-control" id="email" placeholder="Email address or phone number">
+          </div>
+          <div id="emailError" class="error"></div>
+
+          <!-- Password -->
+          <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+            <input type="password" class="form-control" id="password" placeholder="Password">
+          </div>
+          <div id="passwordError" class="error"></div>
+
+          <!-- Login Button -->
+          <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-primary" id="loginBtn" disabled>Log in</button>
+          </div>
+          <div class="text-center mb-3">
+            <a href="#">Forgotten password?</a>
+          </div>
+          <hr>
+          <div class="d-grid">
+            <button type="button" class="btn btn-success">Create new account</button>
+          </div>
+        </form>
+        <div class="mt-3 text-center">
+          <small>Create a Page for a celebrity, brand or business.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script src="script.js"></script>
+
+</body>
+</html>

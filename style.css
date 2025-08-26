@@ -1,0 +1,50 @@
+body {
+    background-color: #f0f2f5;
+  }
+  
+  .login-box {
+    margin-top: 80px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+  }
+  
+  .error {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+  }
+  
+  .fb-title {
+    color: #1877f2;
+    font-size: 48px;
+    font-weight: bold;
+  }
+  
+  .fb-tagline {
+    font-size: 20px;
+    margin-left: 10px;
+  }
+  
+  .input-group-text {
+    background-color: #f0f2f5;
+    border-right: none;
+  }
+  
+  .input-group .form-control {
+    border-left: none;
+  }
+  /* When disabled */
+.btn-primary:disabled {
+    background-color: #cccccc !important;  /* grey */
+    border-color: #cccccc !important;
+    cursor: not-allowed;
+  }
+  
+  /* When enabled (normal state) */
+  .btn-primary {
+    background-color: #1877f2; /* Facebook blue */
+    border-color: #1877f2;
+  }
+  
