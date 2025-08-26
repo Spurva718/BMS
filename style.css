@@ -27,24 +27,42 @@ body {
     margin-left: 10px;
   }
   
-  .input-group-text {
-    background-color: #f0f2f5;
-    border-right: none;
+  /* Icon inside inputs */
+  .input-icon {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    color: #777;
+    font-size: 16px;
+    pointer-events: none;
   }
   
-  .input-group .form-control {
-    border-left: none;
+  .position-relative .form-control {
+    padding-left: 2.5rem; /* space for left icon */
   }
-  /* When disabled */
-.btn-primary:disabled {
-    background-color: #cccccc !important;  /* grey */
-    border-color: #cccccc !important;
+  
+  /* Eye icon (toggle password) */
+  .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #777;
+    cursor: pointer;
+  }
+  
+  /* Custom button colors */
+  .btn-primary {
+    background-color: #1877f2;
+    border-color: #1877f2;
+  }
+  
+  button.btn-primary:disabled {
+    background-color: #cccccc;
+    border-color: #cccccc;
     cursor: not-allowed;
   }
   
-  /* When enabled (normal state) */
-  .btn-primary {
-    background-color: #1877f2; /* Facebook blue */
-    border-color: #1877f2;
-  }
   
