@@ -176,3 +176,173 @@
     </div>
   </div>
 </nav>
+
+****
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Testimonials - SC India</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body { background: linear-gradient(135deg, #ece9e6, #ffffff); font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    .testimonial-section { padding: 60px 20px; }
+    .testimonial-card { border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,.1); transition: transform .3s ease; }
+    .testimonial-card:hover { transform: translateY(-4px); }
+    .form-card { border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,.15); background: #f9f9f9; }
+    h2 { font-weight: 700; color: #2c5364; }
+    .btn-custom { border-radius: 20px; }
+  </style>
+</head>
+<body>
+
+<div class="container testimonial-section">
+  <h2 class="text-center mb-5">🌟 Customer Testimonials 🌟</h2>
+
+  <!-- Form -->
+  <div class="row justify-content-center mb-4">
+    <div class="col-md-6">
+      <div class="card form-card p-4">
+        <h4 class="mb-3 text-center text-primary">Add Your Feedback</h4>
+        <form id="testimonialForm">
+          <div class="mb-3">
+            <label for="tName" class="form-label">Your Name</label>
+            <input type="text" id="tName" class="form-control" placeholder="Enter your name" required />
+          </div>
+          <div class="mb-3">
+            <label for="tMessage" class="form-label">Your Testimonial</label>
+            <textarea id="tMessage" class="form-control" placeholder="Write your experience..." rows="3" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-success w-100 btn-custom">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- List -->
+  <div class="row justify-content-center">
+    <div class="col-md-8" id="testimonialList"></div>
+  </div>
+</div>
+
+<script>
+  // ================= TESTIMONIAL CLASS =================
+  class Testimonial {
+    constructor(name, message) {
+      this.name = name;
+      this.message = message;
+    }
+  }
+
+  const testimonialForm = document.getElementById("testimonialForm");
+  const testimonialList = document.getElementById("testimonialList");
+
+  // Create one testimonial card DOM and wire events
+  const createTestimonialCard = (testimonial) => {
+    const card = document.createElement("div");
+    card.className = "card testimonial-card p-4 mb-3";
+
+    const nameEl = document.createElement("h5");
+    nameEl.className = "text-primary mb-2";
+    nameEl.textContent = testimonial.name;     // 🔒 Name is never turned into an input
+
+    const msgEl = document.createElement("p");
+    msgEl.className = "mb-2";
+    msgEl.textContent = testimonial.message;
+
+    const btnGroup = document.createElement("div");
+    btnGroup.className = "mt-3 d-flex gap-2";
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "btn btn-sm btn-outline-primary btn-custom";
+    editBtn.textContent = "✏️ Edit";
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "btn btn-sm btn-outline-danger btn-custom";
+    delBtn.textContent = "🗑️ Delete";
+
+    // ----- Edit: message only (inline textarea), name remains fixed text -----
+    editBtn.addEventListener("click", () => {
+      // Replace message <p> with a <textarea>
+      const textarea = document.createElement("textarea");
+      textarea.className = "form-control";
+      textarea.rows = 3;
+      textarea.value = testimonial.message;
+
+      card.replaceChild(textarea, msgEl);
+
+      // Show Save/Cancel, hide Edit/Delete during editing
+      editBtn.classList.add("d-none");
+      delBtn.classList.add("d-none");
+
+      const saveBtn = document.createElement("button");
+      saveBtn.className = "btn btn-sm btn-success btn-custom";
+      saveBtn.textContent = "💾 Save";
+
+      const cancelBtn = document.createElement("button");
+      cancelBtn.className = "btn btn-sm btn-secondary btn-custom";
+      cancelBtn.textContent = "↩️ Cancel";
+
+      btnGroup.appendChild(saveBtn);
+      btnGroup.appendChild(cancelBtn);
+
+      // Save updated message only
+      saveBtn.addEventListener("click", () => {
+        const newMsg = textarea.value.trim();
+        if (!newMsg) return; // simple guard: don't save empty
+        testimonial.message = newMsg;    // update data
+        msgEl.textContent = newMsg;      // update UI
+        card.replaceChild(msgEl, textarea);
+
+        // restore buttons
+        saveBtn.remove(); cancelBtn.remove();
+        editBtn.classList.remove("d-none");
+        delBtn.classList.remove("d-none");
+      });
+
+      // Cancel restore old message
+      cancelBtn.addEventListener("click", () => {
+        card.replaceChild(msgEl, textarea);
+        saveBtn.remove(); cancelBtn.remove();
+        editBtn.classList.remove("d-none");
+        delBtn.classList.remove("d-none");
+      });
+    });
+
+    // ----- Delete card -----
+    delBtn.addEventListener("click", () => {
+      testimonialList.removeChild(card);
+    });
+
+    btnGroup.appendChild(editBtn);
+    btnGroup.appendChild(delBtn);
+
+    card.appendChild(nameEl);
+    card.appendChild(msgEl);
+    card.appendChild(btnGroup);
+
+    testimonialList.appendChild(card);
+  };
+
+  // Preload a couple so page isn't empty (optional)
+  [ new Testimonial("Aarav Sharma", "Great service and smooth experience!"),
+    new Testimonial("Priya Patel", "Loved the quick support and offers.") ]
+    .forEach(createTestimonialCard);
+
+  // Add new testimonials
+  testimonialForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("tName").value.trim();
+    const message = document.getElementById("tMessage").value.trim();
+    if (!name || !message) return;
+
+    const t = new Testimonial(name, message);
+    createTestimonialCard(t);
+
+    // reset only message (you can keep name to add more under same person if you want)
+    document.getElementById("tMessage").value = "";
+  });
+</script>
+</body>
+</html>
