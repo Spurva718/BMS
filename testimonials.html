@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testimonials - SC India</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #ece9e6, #ffffff);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .testimonial-section {
+      padding: 60px 20px;
+    }
+    .testimonial-card {
+      border-radius: 15px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    .testimonial-card:hover {
+      transform: translateY(-5px);
+    }
+    .form-card {
+      border-radius: 15px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+      background: #f9f9f9;
+    }
+    h2 {
+      font-weight: bold;
+      color: #2c5364;
+    }
+    .btn-custom {
+      border-radius: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container testimonial-section">
+  <h2 class="text-center mb-5">🌟 Customer Testimonials 🌟</h2>
+
+  <!-- Form -->
+  <div class="row justify-content-center mb-4">
+    <div class="col-md-6">
+      <div class="card form-card p-4">
+        <h4 class="mb-3 text-center text-primary">Add Your Feedback</h4>
+        <form id="testimonialForm">
+          <div class="mb-3">
+            <label for="tName" class="form-label">Your Name</label>
+            <input type="text" id="tName" class="form-control" placeholder="Enter your name" required>
+          </div>
+          <div class="mb-3">
+            <label for="tMessage" class="form-label">Your Testimonial</label>
+            <textarea id="tMessage" class="form-control" placeholder="Write your experience..." rows="3" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-success w-100 btn-custom">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- List -->
+  <div class="row justify-content-center">
+    <div class="col-md-8" id="testimonialList"></div>
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+  // ================= TESTIMONIAL CLASS =================
+  class Testimonial {
+    constructor(name, message) {
+      this.name = name;
+      this.message = message;
+    }
+  }
+
+  const testimonialForm = document.getElementById("testimonialForm");
+  const testimonialList = document.getElementById("testimonialList");
+
+  const createTestimonialCard = (testimonial) => {
+    const card = document.createElement("div");
+    card.className = "card testimonial-card p-4 mb-3";
+
+    const nameEl = document.createElement("h5");
+    nameEl.className = "text-primary";
+    nameEl.textContent = testimonial.name;
+
+    const msgEl = document.createElement("p");
+    msgEl.textContent = testimonial.message;
+
+    const btnGroup = document.createElement("div");
+    btnGroup.className = "mt-3";
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "btn btn-sm btn-outline-primary me-2 btn-custom";
+    editBtn.textContent = "✏️ Edit";
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "btn btn-sm btn-outline-danger btn-custom";
+    delBtn.textContent = "🗑️ Delete";
+
+    // Edit
+    editBtn.addEventListener("click", () => {
+      document.getElementById("tName").value = testimonial.name;
+      document.getElementById("tMessage").value = testimonial.message;
+      testimonialList.removeChild(card);
+    });
+
+    // Delete
+    delBtn.addEventListener("click", () => {
+      testimonialList.removeChild(card);
+    });
+
+    btnGroup.appendChild(editBtn);
+    btnGroup.appendChild(delBtn);
+
+    card.appendChild(nameEl);
+    card.appendChild(msgEl);
+    card.appendChild(btnGroup);
+
+    testimonialList.appendChild(card);
+  };
+
+  // Preloaded testimonials
+  const initialTestimonials = [
+    new Testimonial("Aarav Sharma", "SC India made my banking experience smooth and simple. Highly recommend!"),
+    new Testimonial("Priya Patel", "The credit card services are fantastic, with great offers every month."),
+    new Testimonial("Rohan Mehta", "Customer service is very supportive and responsive. Great experience!")
+  ];
+
+  // Load them when page opens
+  initialTestimonials.forEach(t => createTestimonialCard(t));
+
+  // Add new testimonials from form
+  testimonialForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("tName").value.trim();
+    const message = document.getElementById("tMessage").value.trim();
+
+    if (name && message) {
+      const newTestimonial = new Testimonial(name, message);
+      createTestimonialCard(newTestimonial);
+      testimonialForm.reset();
+    }
+  });
+</script>
+
+</body>
+</html>
+
+
+***
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/1/16/Standard_Chartered_%282021%29.svg" alt="SC Logo" height="40">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="#">Accounts & Deposits</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Invest</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Insure</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Loans</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Cards</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Help</a></li>
+        <li class="nav-item"><a class="nav-link" href="testimonials.html">Testimonials</a></li>
+      </ul>
+      <a href="#" class="btn btn-success">Login</a>
+    </div>
+  </div>
+</nav>
