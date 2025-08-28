@@ -257,3 +257,45 @@ public class BankException extends Exception {
     }
 }
 
+package com.bank.entity;
+
+public class Customer {
+    private int customerId;
+    private int accountId;
+    private String name;
+    private String email;
+
+    public Customer(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public Customer(int customerId, int accountId, String name, String email) {
+        this.customerId = customerId;
+        this.accountId = accountId;
+        this.name = name;
+        this.email = email;
+    }
+
+    public int getCustomerId() { return customerId; }
+    public int getAccountId() { return accountId; }
+    public String getName() { return name; }
+    public String getEmail() { return email; }
+
+    public void setName(String name) { this.name = name; }
+    public void setEmail(String email) { this.email = email; }
+
+    @Override
+    public String toString() {
+        return "Customer [customerId=" + customerId +
+                ", accountId=" + accountId +
+                ", name=" + name +
+                ", email=" + email + "]";
+    }
+}
+CREATE TABLE customer (
+    customer_id SERIAL PRIMARY KEY,      -- auto-generated unique ID for customer
+    account_id SERIAL UNIQUE NOT NULL,   -- auto-generated unique account ID
+    name VARCHAR(100) NOT NULL,          -- customer name
+    email VARCHAR(150) UNIQUE NOT NULL   -- unique email
+);
