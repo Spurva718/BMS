@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS Hands-on Assignments</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f4f6f9;
+      color: #333;
+    }
+    h2 {
+      color: #2c3e50;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 5px;
+    }
+    button {
+      padding: 8px 14px;
+      margin: 10px 0;
+      background: #3498db;
+      border: none;
+      color: white;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    ul {
+      margin-top: 10px;
+      padding: 0;
+      list-style: none;
+    }
+    ul li {
+      background: #ecf0f1;
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 4px;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+    input {
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Assignment 1 -->
+  <h2>Convert Array to Uppercase</h2>
+  <button id="convertBtn">Convert to Uppercase</button>
+  <ul id="arrayList"></ul>
+
+  <!-- Assignment 2 -->
+  <h2>Display Custom Array</h2>
+  <button id="displayBtn">Show Array</button>
+  <ul id="customArrayList"></ul>
+
+  <!-- Assignment 3 -->
+  <h2>Input Validation</h2>
+  <label>
+    Enter Name:
+    <input type="text" id="nameInput">
+    <span id="error" class="error"></span>
+  </label>
+
+  <script>
+    // ---------------- Assignment 1 ----------------
+    class StringArray {
+      constructor(arr) {
+        this.arr = arr;
+      }
+      toUpperCaseArray = () => {
+        this.arr = this.arr.map(str => str.toUpperCase());
+      }
+      displayArray = () => {
+        const list = document.getElementById("arrayList");
+        list.innerHTML = "";
+        this.arr.forEach(item => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          list.appendChild(li);
+        });
+      }
+    }
+
+    const words = new StringArray(["sTandarD", "CharTered", "banK"]);
+    document.getElementById("convertBtn").addEventListener("click", () => {
+      words.toUpperCaseArray();
+      words.displayArray();
+    });
+
+    // ---------------- Assignment 2 ----------------
+    const customArray = ["Apple", "Banana", "Cherry", "Mango"];
+    document.getElementById("displayBtn").addEventListener("click", () => {
+      const list = document.getElementById("customArrayList");
+      list.innerHTML = "";
+      customArray.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        list.appendChild(li);
+      });
+    });
+
+    // ---------------- Assignment 3 ----------------
+    const nameInput = document.getElementById("nameInput");
+    const error = document.getElementById("error");
+    const regex = /^[A-Za-z]+(?: [A-Za-z]+)*$/;
+
+    nameInput.addEventListener("input", () => {
+      if (!regex.test(nameInput.value)) {
+        error.textContent = "Please enter only alphabets";
+      } else {
+        error.textContent = "";
+      }
+    });
+  </script>
+</body>
+</html>
+
+***
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Users Table with Fetch API</title>
+  <style>
+    table {
+      width: 60%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h2>User List</h2>
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Avatar</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    // Async function to load users
+    async function loadUsers() {
+      try {
+        // 1. Fetch data from API
+        let response = await fetch("https://reqres.in/api/users");
+        
+        // 2. Convert to JSON
+        let data = await response.json();
+
+        // 3. Users array is inside "data"
+        let users = data.data;
+
+        // 4. Get table body reference
+        let tbody = document.querySelector("#userTable tbody");
+
+        // 5. Loop through users and add rows
+        users.forEach(user => {
+          let row = document.createElement("tr");
+
+          row.innerHTML = `
+            <td>${user.id}</td>
+            <td><img src="${user.avatar}" width="50" height="50"></td>
+            <td>${user.first_name}</td>
+            <td>${user.last_name}</td>
+            <td>${user.email}</td>
+          `;
+
+          tbody.appendChild(row);
+        });
+
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    }
+
+    // Call function
+    loadUsers();
+  </script>
+</body>
+</html>
