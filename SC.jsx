@@ -1146,3 +1146,299 @@ export default function MakerInbox() {
     </div>
   );
 }
+
+##
+
+import React, { useState, useEffect } from "react";
+
+const mockTransactions = [
+  {
+    transactionRefNo: "TXN1001",
+    loanId: "LN001",
+    applicantName: "John Doe",
+    amount: 50000,
+    currency: "USD",
+    createdAt: "2025-09-01",
+    currStep: "MAKER",
+    lastStepName: "INITIATED",
+    processDate: "2025-09-02 14:10:00",
+    status: "PENDING",
+    assignedTo: null,
+    openDocFlagsCount: 2,
+    flags: [
+      {
+        docFlagId: "F1",
+        documentCode: "ID_PROOF",
+        reason_text: "Uploaded ID proof is blurry",
+      },
+      {
+        docFlagId: "F2",
+        documentCode: "ADDRESS_PROOF",
+        reason_text: "Address does not match",
+      },
+    ],
+  },
+  {
+    transactionRefNo: "TXN1002",
+    loanId: "LN002",
+    applicantName: "Alice Smith",
+    amount: 75000,
+    currency: "EUR",
+    createdAt: "2025-09-01",
+    currStep: "MAKER",
+    lastStepName: "DOCS VERIFIED",
+    processDate: "2025-09-03 09:00:00",
+    status: "IN_PROGRESS",
+    assignedTo: "user123",
+    openDocFlagsCount: 0,
+    flags: [],
+  },
+];
+
+export default function MakerInbox() {
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    setRows(mockTransactions);
+  }, []);
+
+  return (
+    <div
+      style={{
+        fontFamily: "Arial, sans-serif",
+        minHeight: "100vh",
+        background: "linear-gradient(180deg,#004080,#0066cc)",
+        padding: "20px",
+      }}
+    >
+      {/* Navbar */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "12px 24px",
+          background: "#003366",
+          color: "white",
+          borderRadius: "6px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img
+            src="https://seeklogo.com/images/S/standard-chartered-bank-logo-2D1CF4C08C-seeklogo.com.png"
+            alt="SC Logo"
+            style={{ height: 34, marginRight: 12 }}
+          />
+          <span style={{ fontWeight: "bold", fontSize: "20px" }}>
+            Maker Inbox
+          </span>
+        </div>
+        <div>
+          <span style={{ margin: "0 12px", cursor: "pointer" }}>English(UK)</span>
+          <span style={{ margin: "0 12px", cursor: "pointer" }}>Contact Us</span>
+          <span style={{ margin: "0 12px", cursor: "pointer" }}>
+            More Services
+          </span>
+        </div>
+      </div>
+
+      {/* Center Card */}
+      <div
+        style={{
+          background: "white",
+          maxWidth: 1400, // wider
+          margin: "40px auto",
+          borderRadius: "10px",
+          boxShadow: "0 6px 18px rgba(0,0,0,0.25)",
+          padding: "30px",
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            fontSize: "22px",
+            fontWeight: "bold",
+            marginBottom: "20px",
+            color: "#003366",
+            borderBottom: "2px solid #eee",
+            paddingBottom: "8px",
+          }}
+        >
+          Transactions Overview
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: "auto" }}>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              fontSize: "14px",
+            }}
+          >
+            <thead>
+              <tr style={{ background: "#003366", color: "white" }}>
+                {[
+                  "Transaction Ref No",
+                  "Loan ID",
+                  "Applicant",
+                  "Amount",
+                  "Currency",
+                  "Created At",
+                  "Curr Step",
+                  "Last Step",
+                  "Process Date",
+                  "Status",
+                  "Assigned To",
+                  "Flags",
+                  "Actions",
+                ].map((h) => (
+                  <th
+                    key={h}
+                    style={{
+                      padding: "12px 8px",
+                      textAlign: "left",
+                      borderBottom: "2px solid #ddd",
+                    }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <React.Fragment key={row.transactionRefNo}>
+                  <tr
+                    style={{
+                      borderBottom: "1px solid #eee",
+                      background: "#f9f9f9",
+                      transition: "background 0.2s",
+                    }}
+                    onMouseOver={(e) =>
+                      (e.currentTarget.style.background = "#eef5ff")
+                    }
+                    onMouseOut={(e) =>
+                      (e.currentTarget.style.background = "#f9f9f9")
+                    }
+                  >
+                    <td style={{ padding: "10px 8px", fontWeight: "bold" }}>
+                      {row.transactionRefNo}
+                    </td>
+                    <td style={{ padding: "10px 8px" }}>{row.loanId}</td>
+                    <td style={{ padding: "10px 8px" }}>{row.applicantName}</td>
+                    <td style={{ padding: "10px 8px" }}>{row.amount}</td>
+                    <td style={{ padding: "10px 8px" }}>{row.currency}</td>
+                    <td style={{ padding: "10px 8px" }}>{row.createdAt}</td>
+                    <td style={{ padding: "10px 8px" }}>{row.currStep}</td>
+                    <td style={{ padding: "10px 8px" }}>{row.lastStepName}</td>
+                    <td style={{ padding: "10px 8px" }}>{row.processDate}</td>
+                    <td
+                      style={{
+                        padding: "10px 8px",
+                        fontWeight: "bold",
+                        color:
+                          row.status === "PENDING"
+                            ? "orange"
+                            : row.status === "IN_PROGRESS"
+                            ? "blue"
+                            : "green",
+                      }}
+                    >
+                      {row.status}
+                    </td>
+                    <td style={{ padding: "10px 8px" }}>
+                      {row.assignedTo || "-"}
+                    </td>
+                    <td style={{ padding: "10px 8px" }}>
+                      {row.openDocFlagsCount > 0 ? (
+                        <span
+                          style={{
+                            background: "red",
+                            color: "white",
+                            borderRadius: "50%",
+                            padding: "4px 8px",
+                            fontSize: "12px",
+                          }}
+                        >
+                          {row.openDocFlagsCount}
+                        </span>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td style={{ padding: "10px 8px" }}>
+                      <button
+                        style={{
+                          marginRight: 6,
+                          padding: "5px 10px",
+                          background: "#003366",
+                          color: "white",
+                          border: "none",
+                          borderRadius: 4,
+                          cursor: "pointer",
+                        }}
+                      >
+                        View
+                      </button>
+                      {row.assignedTo ? (
+                        <button
+                          style={{
+                            padding: "5px 10px",
+                            background: "#999",
+                            color: "white",
+                            border: "none",
+                            borderRadius: 4,
+                            cursor: "pointer",
+                          }}
+                        >
+                          Unclaim
+                        </button>
+                      ) : (
+                        <button
+                          style={{
+                            padding: "5px 10px",
+                            background: "green",
+                            color: "white",
+                            border: "none",
+                            borderRadius: 4,
+                            cursor: "pointer",
+                          }}
+                        >
+                          Claim
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+
+                  {/* Re-upload row */}
+                  {row.flags && row.flags.length > 0 && (
+                    <tr>
+                      <td
+                        colSpan="13"
+                        style={{
+                          background: "#fff6e6",
+                          padding: "10px",
+                          fontSize: "13px",
+                        }}
+                      >
+                        <strong>⚠️ Re-upload required:</strong>
+                        <ul style={{ margin: "5px 0 0 20px" }}>
+                          {row.flags.map((f) => (
+                            <li key={f.docFlagId}>
+                              {f.documentCode} - {f.reason_text}
+                            </li>
+                          ))}
+                        </ul>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
