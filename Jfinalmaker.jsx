@@ -342,3 +342,98 @@ const styles = {
 };
 
 
+Navabar 2
+import React from "react";
+import logo from "../logo.png"; // make sure your logo.png is in src/
+
+export default function Navbar() {
+  return (
+    <nav style={styles.nav}>
+      <div style={styles.left}>
+        <img src={logo} alt="Standard Chartered" style={styles.logo} />
+      </div>
+      <div style={styles.right}>
+        <a href="#english" style={styles.link}>English(UK)</a>
+        <a href="#contact" style={styles.link}>Contact Us</a>
+        <a href="#services" style={styles.link}>More Services</a>
+      </div>
+    </nav>
+  );
+}
+
+const styles = {
+  nav: {
+    backgroundColor: "#003366",
+    color: "white",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "8px 20px",
+    borderBottom: "2px solid #002244",
+  },
+  left: {
+    display: "flex",
+    alignItems: "center",
+  },
+  logo: {
+    height: "36px",
+  },
+  right: {
+    display: "flex",
+    gap: "20px",
+  },
+  link: {
+    color: "white",
+    textDecoration: "none",
+    fontSize: "14px",
+    position: "relative",
+  },
+};
+
+import React from "react";
+import Filters from "../components/Filters";
+import TransactionTable from "../components/TransactionTable";
+
+export default function MakerInbox() {
+  return (
+    <div style={styles.container}>
+      {/* Page Header like Ops Checker Queue */}
+      <div style={styles.header}>
+        <h2 style={styles.title}>Maker's Inbox</h2>
+      </div>
+
+      {/* Center Card */}
+      <div style={styles.card}>
+        <Filters />
+        <TransactionTable />
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  container: {
+    backgroundColor: "#004080",
+    minHeight: "100vh",
+    padding: "20px",
+  },
+  header: {
+    textAlign: "center",
+    marginBottom: "20px",
+  },
+  title: {
+    color: "white",
+    fontSize: "22px",
+    fontWeight: "bold",
+  },
+  card: {
+    backgroundColor: "white",
+    borderRadius: "12px",
+    padding: "20px",
+    maxWidth: "95%",
+    margin: "0 auto",
+    boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+  },
+};
+
+
