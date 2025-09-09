@@ -1,21 +1,16 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-@Entity
-@Table(name = "customers")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Customer {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
     private String address;
 }
@@ -91,7 +86,6 @@ public class CustomerService implements ICustomer {
         return "Customer deleted with id: " + id;
     }
 }
-
 
 package com.example.demo.controller;
 
