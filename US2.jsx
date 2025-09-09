@@ -178,10 +178,8 @@ export default function App() {
 
 
 
+
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@/components/ui/select";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 // ✅ Navbar
@@ -197,12 +195,22 @@ const Navbar = () => {
         <a href="#" className="hover:underline">Checker Queue</a>
         <a href="#" className="hover:underline">Reports</a>
       </div>
-      <Button variant="secondary" className="bg-white text-[#002663] hover:bg-gray-100">
+      <button className="bg-white text-[#002663] px-4 py-1 rounded hover:bg-gray-100">
         Logout
-      </Button>
+      </button>
     </nav>
   );
 };
+
+// ✅ Reusable Button
+const Btn = ({ children, onClick, className = "" }) => (
+  <button
+    onClick={onClick}
+    className={`px-3 py-1 rounded text-sm font-medium ${className}`}
+  >
+    {children}
+  </button>
+);
 
 // ✅ Maker Inbox Table
 const MakerInbox = () => {
@@ -284,22 +292,22 @@ const MakerInbox = () => {
     <div className="p-6">
       {/* 🔍 Search + Filter */}
       <div className="flex space-x-4 mb-4">
-        <Input
+        <input
+          type="text"
           placeholder="Search by Applicant Name..."
           value={filterText}
           onChange={(e) => setFilterText(e.target.value)}
-          className="w-1/3"
+          className="border px-3 py-2 rounded w-1/3"
         />
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Filter by Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All</SelectItem>
-            <SelectItem value="PENDING">Pending</SelectItem>
-            <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-          </SelectContent>
-        </Select>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="border px-3 py-2 rounded"
+        >
+          <option value="ALL">All Status</option>
+          <option value="PENDING">Pending</option>
+          <option value="IN_PROGRESS">In Progress</option>
+        </select>
       </div>
 
       {/* 📊 Table */}
@@ -350,9 +358,7 @@ const MakerInbox = () => {
                 <td className="px-4 py-2">{row.applicant}</td>
                 <td className="px-4 py-2">{row.amount.toLocaleString()}</td>
                 <td className="px-4 py-2">{row.currency}</td>
-                <td className="px-4 py-2">
-                  {new Date(row.createdAt).toLocaleString()}
-                </td>
+                <td className="px-4 py-2">{new Date(row.createdAt).toLocaleString()}</td>
                 <td className="px-4 py-2">{row.currentStep}</td>
                 <td className="px-4 py-2">{row.lastStep}</td>
                 <td className="px-4 py-2">{row.processDate}</td>
@@ -362,12 +368,12 @@ const MakerInbox = () => {
                 <td className="px-4 py-2">{row.requiredLive}</td>
                 <td className="px-4 py-2">{row.reupload}</td>
                 <td className="px-4 py-2 space-x-2">
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white"
-                    onClick={() => handleClaim(row.ref)}>Claim</Button>
-                  <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white"
-                    onClick={() => handleUnclaim(row.ref)}>Unclaim</Button>
-                  <Button size="sm" variant="secondary"
-                    onClick={() => handleWorkItem(row.ref)}>Go To Work Item</Button>
+                  <Btn className="bg-blue-600 text-white hover:bg-blue-700"
+                    onClick={() => handleClaim(row.ref)}>Claim</Btn>
+                  <Btn className="bg-red-600 text-white hover:bg-red-700"
+                    onClick={() => handleUnclaim(row.ref)}>Unclaim</Btn>
+                  <Btn className="bg-gray-200 hover:bg-gray-300"
+                    onClick={() => handleWorkItem(row.ref)}>Go To Work Item</Btn>
                 </td>
               </tr>
             ))}
@@ -377,23 +383,23 @@ const MakerInbox = () => {
 
       {/* 📑 Pagination */}
       <div className="flex justify-between items-center mt-4">
-        <Button
-          size="sm"
+        <Btn
+          className="bg-gray-200 hover:bg-gray-300"
           disabled={page === 1}
           onClick={() => setPage(page - 1)}
         >
           Previous
-        </Button>
+        </Btn>
         <span>
           Page {page} of {totalPages}
         </span>
-        <Button
-          size="sm"
+        <Btn
+          className="bg-gray-200 hover:bg-gray-300"
           disabled={page === totalPages}
           onClick={() => setPage(page + 1)}
         >
           Next
-        </Button>
+        </Btn>
       </div>
     </div>
   );
