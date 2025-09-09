@@ -448,3 +448,293 @@ const MakerInboxTable = () => {
 };
 
 export default MakerInboxTable;
+
+
+
+import React, { useEffect, useState } from "react";
+
+// ------------------------------
+// Types
+// ------------------------------
+
+type Status = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "REJECTED";
+
+type DocFlag = {
+  docFlagId: string;
+  documentCode: string;
+  reason_code: string;
+  reason_text: string;
+  created_at: string;
+};
+
+type TransactionRow = {
+  transactionId: string;
+  transactionRefNo: string;
+  loanId: string;
+  applicantName: string;
+  amount: number;
+  currency: string;
+  createdAt: string;
+  currStep: "MAKER" | string;
+  lastStepName: string;
+  processDate: string;
+  status: Status;
+  assignedTo?: string | null;
+  openDocFlagsCount: number;
+  hasAllRequiredLive: boolean;
+  reuploadRequestsToCustomer: boolean;
+  flags?: DocFlag[];
+};
+
+// ------------------------------
+// Utilities
+// ------------------------------
+
+const fmtMoney = (amt: number, currency: string) =>
+  new Intl.NumberFormat(undefined, { style: "currency", currency }).format(amt);
+
+const fmtDate = (iso: string) => new Date(iso).toLocaleString();
+
+// ------------------------------
+// Mock API (replace with real endpoints)
+// ------------------------------
+
+const mockRows: TransactionRow[] = Array.from({ length: 15 }).map((_, i) => {
+  const flagsCt = i % 4 === 0 ? Math.floor(Math.random() * 4) + 1 : 0;
+  return {
+    transactionId: `txn_${1000 + i}`,
+    transactionRefNo: `SCW1575SG10A11${(10419074465 + i).toString()}`,
+    loanId: `LN_${8000 + i}`,
+    applicantName: i % 3 === 0 ? "Aarav Sharma" : i % 3 === 1 ? "Sara Khan" : "Rohit Patel",
+    amount: 50000 + i * 1275,
+    currency: "USD",
+    createdAt: new Date(Date.now() - i * 86400000).toISOString(),
+    currStep: "MAKER",
+    lastStepName: "Maker Completed",
+    processDate: new Date(Date.now() - i * 3600000).toISOString(),
+    status: i % 2 === 0 ? "PENDING" : "IN_PROGRESS",
+    assignedTo: i % 5 === 0 ? null : "ketki.s",
+    openDocFlagsCount: flagsCt,
+    hasAllRequiredLive: i % 7 !== 0,
+    reuploadRequestsToCustomer: flagsCt > 0,
+  };
+});
+
+const Api = {
+  async listMakerQueue(): Promise<TransactionRow[]> {
+    await new Promise((r) => setTimeout(r, 400));
+    return structuredClone(mockRows);
+  },
+  async claim(transactionId: string): Promise<void> {
+    await new Promise((r) => setTimeout(r, 300));
+  },
+  async unclaim(transactionId: string): Promise<void> {
+    await new Promise((r) => setTimeout(r, 300));
+  },
+};
+
+// ------------------------------
+// Main Component
+// ------------------------------
+
+export default function MakerInbox() {
+  const [rows, setRows] = useState<TransactionRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // filters
+  const [searchText, setSearchText] = useState("");
+  const [statusFilter, setStatusFilter] = useState<Status | "">("");
+  const [minAmount, setMinAmount] = useState("");
+  const [maxAmount, setMaxAmount] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      const data = await Api.listMakerQueue();
+      setRows(data);
+      setLoading(false);
+    })();
+  }, []);
+
+  const resetFilters = () => {
+    setSearchText("");
+    setStatusFilter("");
+    setMinAmount("");
+    setMaxAmount("");
+    setFromDate("");
+    setToDate("");
+  };
+
+  const filtered = rows.filter((r) => {
+    if (searchText) {
+      const s = searchText.toLowerCase();
+      if (
+        !r.transactionRefNo.toLowerCase().includes(s) &&
+        !r.applicantName.toLowerCase().includes(s)
+      ) {
+        return false;
+      }
+    }
+    if (statusFilter && r.status !== statusFilter) return false;
+    if (minAmount && r.amount < parseFloat(minAmount)) return false;
+    if (maxAmount && r.amount > parseFloat(maxAmount)) return false;
+
+    if (fromDate) {
+      const from = new Date(fromDate);
+      if (new Date(r.processDate) < from) return false;
+    }
+    if (toDate) {
+      const to = new Date(toDate);
+      to.setHours(23, 59, 59, 999);
+      if (new Date(r.processDate) > to) return false;
+    }
+
+    return true;
+  });
+
+  return (
+    <div
+      style={{
+        padding: 20,
+        fontFamily: "Arial, sans-serif",
+        background: "#f5f7fa",
+        minHeight: "100vh",
+      }}
+    >
+      <h2 style={{ color: "#003366", marginBottom: 20 }}>Ops Checker Queue</h2>
+
+      {/* Filters */}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 10,
+          marginBottom: 20,
+          alignItems: "center",
+        }}
+      >
+        <input
+          type="text"
+          placeholder="Search (RefNo / Applicant)"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ padding: 6, flex: 1 }}
+        />
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as any)}
+          style={{ padding: 6 }}
+        >
+          <option value="">All Status</option>
+          <option value="PENDING">Pending</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+        <input
+          type="number"
+          placeholder="Min Amount"
+          value={minAmount}
+          onChange={(e) => setMinAmount(e.target.value)}
+          style={{ width: 120, padding: 6 }}
+        />
+        <input
+          type="number"
+          placeholder="Max Amount"
+          value={maxAmount}
+          onChange={(e) => setMaxAmount(e.target.value)}
+          style={{ width: 120, padding: 6 }}
+        />
+        <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+        <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+        <button
+          onClick={resetFilters}
+          style={{ background: "#ccc", padding: "6px 12px", border: "none", cursor: "pointer" }}
+        >
+          Clear
+        </button>
+      </div>
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <table
+          style={{
+            borderCollapse: "collapse",
+            width: "100%",
+            background: "white",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+          }}
+        >
+          <thead style={{ background: "#003366", color: "white" }}>
+            <tr>
+              <th style={{ padding: 8, textAlign: "left" }}>Transaction Ref No</th>
+              <th style={{ padding: 8 }}>Loan ID</th>
+              <th style={{ padding: 8 }}>Applicant</th>
+              <th style={{ padding: 8 }}>Amount</th>
+              <th style={{ padding: 8 }}>Currency</th>
+              <th style={{ padding: 8 }}>Created At</th>
+              <th style={{ padding: 8 }}>Current Step</th>
+              <th style={{ padding: 8 }}>Last Step</th>
+              <th style={{ padding: 8 }}>Process Date</th>
+              <th style={{ padding: 8 }}>Status</th>
+              <th style={{ padding: 8 }}>Assigned To</th>
+              <th style={{ padding: 8 }}>Flags</th>
+              <th style={{ padding: 8 }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((r) => (
+              <tr key={r.transactionId} style={{ borderBottom: "1px solid #ddd" }}>
+                <td style={{ padding: 6 }}>{r.transactionRefNo}</td>
+                <td style={{ padding: 6 }}>{r.loanId}</td>
+                <td style={{ padding: 6 }}>{r.applicantName}</td>
+                <td style={{ padding: 6 }}>{fmtMoney(r.amount, r.currency)}</td>
+                <td style={{ padding: 6 }}>{r.currency}</td>
+                <td style={{ padding: 6 }}>{fmtDate(r.createdAt)}</td>
+                <td style={{ padding: 6 }}>{r.currStep}</td>
+                <td style={{ padding: 6 }}>{r.lastStepName}</td>
+                <td style={{ padding: 6 }}>{fmtDate(r.processDate)}</td>
+                <td
+                  style={{
+                    padding: 6,
+                    fontWeight: "bold",
+                    color:
+                      r.status === "PENDING"
+                        ? "orange"
+                        : r.status === "IN_PROGRESS"
+                        ? "blue"
+                        : r.status === "COMPLETED"
+                        ? "green"
+                        : "red",
+                  }}
+                >
+                  {r.status}
+                </td>
+                <td style={{ padding: 6 }}>{r.assignedTo || "Unassigned"}</td>
+                <td style={{ padding: 6 }}>
+                  {r.openDocFlagsCount > 0 && (
+                    <span style={{ color: "red", fontWeight: "bold" }}>
+                      {r.openDocFlagsCount} ⚑
+                    </span>
+                  )}
+                </td>
+                <td style={{ padding: 6 }}>
+                  <button style={{ marginRight: 4 }}>View</button>
+                  {r.assignedTo ? (
+                    <button onClick={() => Api.unclaim(r.transactionId)}>Unclaim</button>
+                  ) : (
+                    <button onClick={() => Api.claim(r.transactionId)}>Claim</button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}
+
