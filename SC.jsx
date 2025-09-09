@@ -251,3 +251,200 @@ const buttonStyle = {
 };
 
 export default MakerInboxTable;
+
+
+
+import React, { useState, useMemo } from 'react';
+import logo from './sc-logo.png'; // Add your Standard Chartered logo in /src folder
+
+const MOCK_LOANS = [/* keep your mock loans as is */];
+
+const MakerInboxTable = () => {
+  const [loans] = useState(MOCK_LOANS);
+  const [searchText, setSearchText] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [showReuploadDetails, setShowReuploadDetails] = useState(false);
+
+  const filteredLoans = useMemo(() => {
+    return loans.filter(loan => {
+      const matchesSearch = searchText === '' ||
+        loan.transactionRefNo.toLowerCase().includes(searchText.toLowerCase()) ||
+        loan.applicantName.toLowerCase().includes(searchText.toLowerCase());
+      const matchesStatus = statusFilter === '' || loan.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [loans, searchText, statusFilter]);
+
+  const handleRowClick = (loanId, transactionRefNo) => {
+    alert(`Row clicked: Loan ID - ${loanId}, Transaction Ref No - ${transactionRefNo}`);
+  };
+
+  const handleClaimUnclaim = (transactionId, action) => {
+    alert(`${action} action for Transaction ID: ${transactionId}`);
+  };
+
+  const handleGoToWorkItem = (transactionId, loanId) => {
+    alert(`Go to Work Item for Transaction ID: ${transactionId}, Loan ID: ${loanId}`);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 text-gray-900">
+      {/* Navbar */}
+      <nav className="flex items-center justify-between px-6 py-4 bg-blue-950 shadow-lg">
+        <div className="flex items-center gap-3">
+          <img src={logo} alt="SC Logo" className="h-8" />
+          <span className="text-white text-lg font-semibold">Standard Chartered</span>
+        </div>
+        <div className="text-white text-sm space-x-6">
+          <span className="hover:underline cursor-pointer">English(UK)</span>
+          <span className="hover:underline cursor-pointer">Contact Us</span>
+          <span className="hover:underline cursor-pointer">More Services</span>
+        </div>
+      </nav>
+
+      {/* Header */}
+      <div className="text-center text-white py-6">
+        <h1 className="text-2xl font-bold">Maker Inbox</h1>
+      </div>
+
+      <div className="container mx-auto px-6">
+        {/* Filters Section */}
+        <div className="bg-white p-4 rounded-lg shadow-md mb-6 flex flex-wrap gap-3 items-center">
+          <input
+            type="text"
+            placeholder="Search RefNo/Applicant"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="border rounded px-3 py-2 flex-1"
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="border rounded px-3 py-2"
+          >
+            <option value="">All Status</option>
+            <option value="PENDING">Pending</option>
+            <option value="IN_PROGRESS">In Progress</option>
+          </select>
+          <div className="flex items-center gap-2">
+            <span className="text-sm">Date:</span>
+            <input type="date" className="border rounded px-2 py-1" />
+            <span>-</span>
+            <input type="date" className="border rounded px-2 py-1" />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm">Amount:</span>
+            <input type="number" placeholder="Min" className="border rounded px-2 py-1 w-24" />
+            <span>-</span>
+            <input type="number" placeholder="Max" className="border rounded px-2 py-1 w-24" />
+          </div>
+          <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow">
+            Apply Filters
+          </button>
+        </div>
+
+        {/* Re-upload Banner */}
+        {loans.some(loan => loan.reuploadRequestsToCustomer) && (
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 mb-6 rounded shadow">
+            <h3 className="font-semibold">
+              Re-upload Requests Pending!
+              <button
+                onClick={() => setShowReuploadDetails(!showReuploadDetails)}
+                className="ml-2 text-blue-600 underline"
+              >
+                {showReuploadDetails ? 'Hide' : 'Show'} Details
+              </button>
+            </h3>
+            {showReuploadDetails && (
+              <ul className="mt-2 space-y-2">
+                {loans.filter(loan => loan.reuploadRequestsToCustomer).map(loan => (
+                  <li key={loan.loanId} className="border-b pb-2">
+                    <strong>{loan.loanId} ({loan.transactionRefNo})</strong> requires re-uploads:
+                    <ul className="ml-6 list-disc text-sm">
+                      {loan.documentFlags.map(flag => (
+                        <li key={flag.docFlagId}>
+                          {flag.documentCode}: {flag.reason_text} ({flag.reason_code}, {flag.created_at})
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
+        {/* Loan Table */}
+        <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
+          <table className="w-full border-collapse">
+            <thead className="bg-blue-800 text-white">
+              <tr>
+                <th className="px-4 py-2 text-left">Transaction Ref No</th>
+                <th className="px-4 py-2 text-left">Loan ID</th>
+                <th className="px-4 py-2 text-left">Applicant Name</th>
+                <th className="px-4 py-2 text-left">Amount</th>
+                <th className="px-4 py-2 text-left">Currency</th>
+                <th className="px-4 py-2 text-left">Created At</th>
+                <th className="px-4 py-2 text-left">Current Step</th>
+                <th className="px-4 py-2 text-left">Last Step</th>
+                <th className="px-4 py-2 text-left">Process Date</th>
+                <th className="px-4 py-2 text-left">Status</th>
+                <th className="px-4 py-2 text-left">Assigned To</th>
+                <th className="px-4 py-2 text-left">Open Docs</th>
+                <th className="px-4 py-2 text-left">Required Live</th>
+                <th className="px-4 py-2 text-left">Re-upload</th>
+                <th className="px-4 py-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredLoans.map((loan, idx) => (
+                <tr
+                  key={loan.transactionRefNo}
+                  onClick={() => handleRowClick(loan.loanId, loan.transactionRefNo)}
+                  className={`hover:bg-blue-50 cursor-pointer ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                >
+                  <td className="px-4 py-2">{loan.transactionRefNo}</td>
+                  <td className="px-4 py-2">{loan.loanId}</td>
+                  <td className="px-4 py-2">{loan.applicantName}</td>
+                  <td className="px-4 py-2">{loan.amount.toLocaleString()}</td>
+                  <td className="px-4 py-2">{loan.currency}</td>
+                  <td className="px-4 py-2">{new Date(loan.createdAt).toLocaleString()}</td>
+                  <td className="px-4 py-2">{loan.currStep}</td>
+                  <td className="px-4 py-2">{loan.lastStepName}</td>
+                  <td className="px-4 py-2">{new Date(loan.processDate).toLocaleDateString()}</td>
+                  <td className="px-4 py-2">{loan.status}</td>
+                  <td className="px-4 py-2">{loan.assignedTo || 'Unassigned'}</td>
+                  <td className="px-4 py-2">{loan.openDocFlagsCount}</td>
+                  <td className="px-4 py-2">{loan.hasAllRequiredLive ? 'Yes' : 'No'}</td>
+                  <td className="px-4 py-2">{loan.reuploadRequestsToCustomer ? 'Yes' : 'No'}</td>
+                  <td className="px-4 py-2 space-x-2">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleClaimUnclaim(loan.transactionRefNo, 'claim'); }}
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+                    >
+                      Claim
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleClaimUnclaim(loan.transactionRefNo, 'unclaim'); }}
+                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                    >
+                      Unclaim
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleGoToWorkItem(loan.transactionRefNo, loan.loanId); }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
+                    >
+                      Go to Work Item
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MakerInboxTable;
