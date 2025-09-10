@@ -437,3 +437,509 @@ const styles = {
 };
 
 
+Filters 2 
+
+import React, { useState } from "react";
+
+export default function Filters({
+  filters,
+  setFilters,
+  clearFilters,
+  visibleColumns,
+  setVisibleColumns,
+}) {
+  const [showColumnsMenu, setShowColumnsMenu] = useState(false);
+
+  const toggleColumn = (colKey) => {
+    setVisibleColumns({
+      ...visibleColumns,
+      [colKey]: !visibleColumns[colKey],
+    });
+  };
+
+  return (
+    <div style={styles.container}>
+      {/* Top row: search + show/hide columns */}
+      <div style={styles.topRow}>
+        <input
+          type="text"
+          placeholder="Search (txn, step, date...)"
+          value={filters.searchText}
+          onChange={(e) =>
+            setFilters({ ...filters, searchText: e.target.value })
+          }
+          style={styles.search}
+        />
+        <div style={{ position: "relative" }}>
+          <button
+            style={styles.button}
+            onClick={() => setShowColumnsMenu(!showColumnsMenu)}
+          >
+            Show/Hide Columns
+          </button>
+          {showColumnsMenu && (
+            <div style={styles.dropdownMenu}>
+              {Object.keys(visibleColumns).map((colKey) => (
+                <label key={colKey} style={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={visibleColumns[colKey]}
+                    onChange={() => toggleColumn(colKey)}
+                  />
+                  {colKey}
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom row: filters */}
+      <div style={styles.bottomRow}>
+        <select
+          value={filters.status}
+          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+          style={styles.dropdown}
+        >
+          <option value="">All Status</option>
+          <option value="PENDING">Pending</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="APPROVED">Approved</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+
+        <input
+          type="number"
+          placeholder="Min Amount"
+          value={filters.minAmount}
+          onChange={(e) => setFilters({ ...filters, minAmount: e.target.value })}
+          style={styles.input}
+        />
+        <input
+          type="number"
+          placeholder="Max Amount"
+          value={filters.maxAmount}
+          onChange={(e) => setFilters({ ...filters, maxAmount: e.target.value })}
+          style={styles.input}
+        />
+
+        <input
+          type="date"
+          value={filters.startDate}
+          onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+          style={styles.input}
+        />
+        <input
+          type="date"
+          value={filters.endDate}
+          onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+          style={styles.input}
+        />
+
+        <button style={styles.clearBtn} onClick={clearFilters}>
+          Clear Filters
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  container: { marginBottom: 15 },
+  topRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    alignItems: "center",
+  },
+  search: {
+    flex: 1,
+    padding: "6px 10px",
+    borderRadius: 6,
+    border: "1px solid #ccc",
+    marginRight: 10,
+  },
+  button: {
+    padding: "6px 12px",
+    background: "#003366",
+    color: "white",
+    border: "none",
+    borderRadius: 6,
+    cursor: "pointer",
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: "100%",
+    right: 0,
+    background: "white",
+    border: "1px solid #ccc",
+    padding: 10,
+    borderRadius: 6,
+    zIndex: 100,
+  },
+  checkboxLabel: {
+    display: "block",
+    fontSize: "14px",
+    marginBottom: 4,
+  },
+  bottomRow: { display: "flex", gap: 10, flexWrap: "wrap" },
+  dropdown: { padding: "6px", borderRadius: 6, border: "1px solid #ccc" },
+  input: { padding: "6px", borderRadius: 6, border: "1px solid #ccc" },
+  clearBtn: {
+    padding: "6px 12px",
+    background: "gray",
+    color: "white",
+    border: "none",
+    borderRadius: 6,
+    cursor: "pointer",
+  },
+};
+
+import React, { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import Filters from "../components/Filters";
+import TransactionTable from "../components/TransactionTable";
+import {
+  fetchTransactionsFrontend,
+  claimTransaction,
+  unclaimTransaction,
+} from "../api/transactionService";
+
+export default function MakerInbox() {
+  const [filters, setFilters] = useState({
+    searchText: "",
+    status: "",
+    minAmount: "",
+    maxAmount: "",
+    startDate: "",
+    endDate: "",
+  });
+
+  const [visibleColumns, setVisibleColumns] = useState({
+    transactionRefNo: true,
+    loanId: true,
+    applicantName: true,
+    amount: true,
+    currency: true,
+    createdAt: true,
+    currStep: true,
+    lastStepName: true,
+    processDate: true,
+    status: true,
+    assignedTo: true,
+    openDocFlagsCount: true,
+  });
+
+  const [rows, setRows] = useState([]);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const pageSize = 5;
+
+  useEffect(() => {
+    fetchTransactionsFrontend(page, pageSize).then((res) => {
+      setRows(res.rows);
+      setTotal(res.total);
+    });
+  }, [page]);
+
+  // 🔹 Apply filters here
+  const filteredRows = rows.filter((row) => {
+    const matchesSearch =
+      !filters.searchText ||
+      row.transactionRefNo
+        .toLowerCase()
+        .includes(filters.searchText.toLowerCase()) ||
+      row.applicantName
+        .toLowerCase()
+        .includes(filters.searchText.toLowerCase());
+
+    const matchesStatus =
+      !filters.status || row.status === filters.status;
+
+    const matchesAmount =
+      (!filters.minAmount || row.amount >= Number(filters.minAmount)) &&
+      (!filters.maxAmount || row.amount <= Number(filters.maxAmount));
+
+    const matchesDate =
+      (!filters.startDate ||
+        new Date(row.createdAt) >= new Date(filters.startDate)) &&
+      (!filters.endDate ||
+        new Date(row.createdAt) <= new Date(filters.endDate));
+
+    return matchesSearch && matchesStatus && matchesAmount && matchesDate;
+  });
+
+  const clearFilters = () =>
+    setFilters({
+      searchText: "",
+      status: "",
+      minAmount: "",
+      maxAmount: "",
+      startDate: "",
+      endDate: "",
+    });
+
+  const claim = async (id) => {
+    await claimTransaction(id);
+  };
+  const unclaim = async (id) => {
+    await unclaimTransaction(id);
+  };
+
+  return (
+    <div style={{ background: "#004080", minHeight: "100vh" }}>
+      <Navbar />
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h2 style={styles.title}>Maker's Inbox</h2>
+        </div>
+        <div style={styles.card}>
+          <Filters
+            filters={filters}
+            setFilters={setFilters}
+            clearFilters={clearFilters}
+            visibleColumns={visibleColumns}
+            setVisibleColumns={setVisibleColumns}
+          />
+          <TransactionTable
+            rows={filteredRows}
+            claim={claim}
+            unclaim={unclaim}
+            page={page}
+            setPage={setPage}
+            total={total}
+            pageSize={pageSize}
+            visibleColumns={visibleColumns}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  container: { padding: "20px" },
+  header: { textAlign: "center", marginBottom: "20px" },
+  title: { color: "white", fontSize: "22px", fontWeight: "bold" },
+  card: {
+    backgroundColor: "white",
+    borderRadius: "12px",
+    padding: "20px",
+    maxWidth: "95%",
+    margin: "0 auto",
+    boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+  },
+};
+
+
+import React from "react";
+
+export default function ReuploadBanner({ flags, openDocFlagsCount }) {
+  // If no flags at all, hide the banner
+  if ((!flags || flags.length === 0) && !openDocFlagsCount) return null;
+
+  return (
+    <div style={styles.banner}>
+      <strong>Re-upload required:</strong>
+      {Array.isArray(flags) && flags.length > 0 ? (
+        <ul>
+          {flags.map((f) => (
+            <li key={f.docFlagId}>
+              [{f.documentCode}] {f.reason_text} (
+              {new Date(f.created_at).toLocaleDateString()})
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>{openDocFlagsCount} document(s) need re-upload.</p>
+      )}
+    </div>
+  );
+}
+
+const styles = {
+  banner: {
+    marginTop: 8,
+    background: "#fff3cd",
+    padding: "6px 10px",
+    borderRadius: 6,
+    border: "1px solid #ffeeba",
+  },
+};
+
+
+import React from "react";
+import ReuploadBanner from "./ReuploadBanner";
+
+export default function TransactionTable({
+  rows,
+  claim,
+  unclaim,
+  page,
+  setPage,
+  total,
+  pageSize,
+  visibleColumns, // 🔹 control column visibility
+}) {
+  const columns = [
+    { key: "transactionRefNo", label: "Txn Ref" },
+    { key: "loanId", label: "Loan ID" },
+    { key: "applicantName", label: "Applicant" },
+    { key: "amount", label: "Amount" },
+    { key: "currency", label: "Currency" },
+    { key: "createdAt", label: "Created" },
+    { key: "currStep", label: "Step" },
+    { key: "lastStepName", label: "Last Step" },
+    { key: "processDate", label: "Process Date" },
+    { key: "status", label: "Status" },
+    { key: "assignedTo", label: "Assigned To" },
+    { key: "openDocFlagsCount", label: "Flags" },
+  ];
+
+  const totalPages = Math.ceil(total / pageSize);
+
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <table style={styles.table}>
+        <thead>
+          <tr>
+            {columns
+              .filter((col) => visibleColumns[col.key] !== false)
+              .map((col) => (
+                <th key={col.key} style={styles.th}>
+                  {col.label}
+                </th>
+              ))}
+            <th style={styles.th}>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <React.Fragment key={row.id}>
+              <tr>
+                {columns
+                  .filter((col) => visibleColumns[col.key] !== false)
+                  .map((col) => (
+                    <td key={col.key} style={styles.td}>
+                      {col.key === "status" ? (
+                        <span
+                          style={{
+                            ...styles.badge,
+                            ...statusColors[row.status],
+                          }}
+                        >
+                          {row.status}
+                        </span>
+                      ) : (
+                        row[col.key]
+                      )}
+                    </td>
+                  ))}
+                <td style={styles.td}>
+                  <button
+                    style={styles.actionBtn}
+                    onClick={() => (window.location.href = "/details")}
+                  >
+                    View
+                  </button>
+                  {row.assignedTo ? (
+                    <button
+                      style={styles.unclaimBtn}
+                      onClick={() => unclaim(row.id)}
+                    >
+                      Unclaim
+                    </button>
+                  ) : (
+                    <button
+                      style={styles.claimBtn}
+                      onClick={() => claim(row.id)}
+                    >
+                      Claim
+                    </button>
+                  )}
+                </td>
+              </tr>
+              {/* Reupload Banner Row */}
+              <tr>
+                <td colSpan={columns.length + 1}>
+                  <ReuploadBanner
+                    flags={row.flags}
+                    openDocFlagsCount={row.openDocFlagsCount}
+                  />
+                </td>
+              </tr>
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Pagination controls */}
+      <div style={styles.pagination}>
+        <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+          Prev
+        </button>
+        <span>
+          Page {page} of {totalPages}
+        </span>
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage(page + 1)}
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    background: "white",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+  },
+  th: { background: "#003366", color: "white", padding: "8px" },
+  td: { padding: "8px", borderBottom: "1px solid #ddd" },
+  badge: {
+    padding: "3px 6px",
+    borderRadius: 4,
+    fontSize: "0.8em",
+    color: "white",
+  },
+  actionBtn: {
+    marginRight: 5,
+    padding: "4px 8px",
+    background: "#003366",
+    color: "white",
+    border: "none",
+    borderRadius: 4,
+  },
+  claimBtn: {
+    padding: "4px 8px",
+    background: "green",
+    color: "white",
+    border: "none",
+    borderRadius: 4,
+  },
+  unclaimBtn: {
+    padding: "4px 8px",
+    background: "red",
+    color: "white",
+    border: "none",
+    borderRadius: 4,
+  },
+  pagination: {
+    marginTop: 10,
+    display: "flex",
+    justifyContent: "center",
+    gap: 10,
+  },
+};
+
+const statusColors = {
+  IN_PROGRESS: { background: "blue" },
+  PENDING: { background: "orange" },
+  APPROVED: { background: "green" },
+  REJECTED: { background: "red" },
+};
