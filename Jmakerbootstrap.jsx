@@ -456,3 +456,141 @@ export default function Navbar() {
     </nav>
   );
 }
+
+## changed MI 1
+
+import React, { useState } from "react";
+
+export default function Filters({
+  filters,
+  setFilters,
+  clearFilters,
+  visibleColumns,
+  setVisibleColumns,
+}) {
+  const [showColumnsMenu, setShowColumnsMenu] = useState(false);
+
+  const toggleColumn = (colKey) => {
+    setVisibleColumns({
+      ...visibleColumns,
+      [colKey]: !visibleColumns[colKey],
+    });
+  };
+
+  return (
+    <div className="mb-3">
+      {/* Search + Show/Hide Columns */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <input
+          type="text"
+          className="form-control me-2"
+          placeholder="Search (txn, step, date...)"
+          value={filters.searchText}
+          onChange={(e) =>
+            setFilters({ ...filters, searchText: e.target.value })
+          }
+        />
+
+        <div className="position-relative">
+          <button
+            className="btn btn-dark btn-sm"
+            onClick={() => setShowColumnsMenu(!showColumnsMenu)}
+          >
+            Show/Hide Columns
+          </button>
+
+          {showColumnsMenu && (
+            <div className="position-absolute bg-white border rounded p-2 mt-1 shadow-sm">
+              {Object.keys(visibleColumns).map((colKey) => (
+                <div key={colKey} className="form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    checked={visibleColumns[colKey]}
+                    onChange={() => toggleColumn(colKey)}
+                    id={colKey}
+                  />
+                  <label
+                    htmlFor={colKey}
+                    className="form-check-label small text-muted"
+                  >
+                    {colKey}
+                  </label>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Filters in Bootstrap Grid */}
+      <div className="row g-2 mb-2">
+        <div className="col-md-2 col-6">
+          <select
+            className="form-select"
+            value={filters.status}
+            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+          >
+            <option value="">All Status</option>
+            <option value="PENDING">Pending</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+          </select>
+        </div>
+
+        <div className="col-md-2 col-6">
+          <input
+            type="number"
+            className="form-control"
+            placeholder="Min Amount"
+            value={filters.minAmount}
+            onChange={(e) =>
+              setFilters({ ...filters, minAmount: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="col-md-2 col-6">
+          <input
+            type="number"
+            className="form-control"
+            placeholder="Max Amount"
+            value={filters.maxAmount}
+            onChange={(e) =>
+              setFilters({ ...filters, maxAmount: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="col-md-2 col-6">
+          <input
+            type="date"
+            className="form-control"
+            value={filters.startDate}
+            onChange={(e) =>
+              setFilters({ ...filters, startDate: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="col-md-2 col-6">
+          <input
+            type="date"
+            className="form-control"
+            value={filters.endDate}
+            onChange={(e) =>
+              setFilters({ ...filters, endDate: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="col-md-2 col-12">
+          <button className="btn btn-secondary w-100" onClick={clearFilters}>
+            Clear Filters
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
