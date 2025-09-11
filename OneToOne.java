@@ -377,3 +377,296 @@ public class CustomerService implements ICustomer{
 
     }
 }
+
+
+
+
+package com.scb.axessspringboottraining.entity;
+
+import jakarta.persistence.*;
+
+@Entity
+public class Customer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable=false)
+    private String name;
+
+    @Column(nullable=false, unique=true)
+    private String email;
+
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    private Credit credit;
+
+    public Customer() {}
+
+    public Customer(Integer id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
+
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public Credit getCredit() { return credit; }
+    public void setCredit(Credit credit) { 
+        this.credit = credit;
+        credit.setCustomer(this);  // maintain bidirectional consistency
+    }
+}
+
+package com.scb.axessspringboottraining.entity;
+
+import jakarta.persistence.*;
+
+@Entity
+public class Credit {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer creditId;
+
+    @Column(nullable=false, unique=true)
+    private Integer cardNo;
+
+    @OneToOne
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    private Customer customer;
+
+    public Credit() {}
+
+    public Credit(Integer creditId, Integer cardNo) {
+        this.creditId = creditId;
+        this.cardNo = cardNo;
+    }
+
+    public Integer getCreditId() { return creditId; }
+    public void setCreditId(Integer creditId) { this.creditId = creditId; }
+
+    public Integer getCardNo() { return cardNo; }
+    public void setCardNo(Integer cardNo) { this.cardNo = cardNo; }
+
+    public Customer getCustomer() { return customer; }
+    public void setCustomer(Customer customer) { this.customer = customer; }
+}
+
+package com.scb.axessspringboottraining.controller;
+
+import com.scb.axessspringboottraining.entity.Customer;
+import com.scb.axessspringboottraining.exception.CustomerNotFoundException;
+import com.scb.axessspringboottraining.service.ICustomer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/customers")
+public class CustomerController {
+
+    @Autowired
+    private ICustomer customerService;
+
+    @GetMapping
+    public List<Customer> getAllCustomers() {
+        return customerService.getAllCustomers();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Customer> getCustomerById(@PathVariable int id) throws CustomerNotFoundException {
+        Customer customer = customerService.getCustomerById(id);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Customer addCustomer(@RequestBody Customer customer) {
+        return customerService.addCustomer(customer);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Customer> updateCustomer(@PathVariable int id,
+                                                   @RequestBody Customer updatedCustomer) throws CustomerNotFoundException {
+        Customer customer = customerService.updateCustomer(id, updatedCustomer);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable int id) throws CustomerNotFoundException {
+        if (customerService.deleteCustomer(id)) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+}
+
+package com.scb.axessspringboottraining.controller;
+
+import com.scb.axessspringboottraining.entity.Credit;
+import com.scb.axessspringboottraining.exception.CreditNotFoundException;
+import com.scb.axessspringboottraining.service.ICredit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/credits")
+public class CreditController {
+
+    @Autowired
+    private ICredit creditService;
+
+    @GetMapping
+    public List<Credit> getAllCredits() {
+        return creditService.getAllCredits();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Credit> getCreditById(@PathVariable int id) throws CreditNotFoundException {
+        Credit credit = creditService.getCreditById(id);
+        return new ResponseEntity<>(credit, HttpStatus.OK);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Credit addCredit(@RequestBody Credit credit) {
+        return creditService.addCredit(credit);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Credit> updateCredit(@PathVariable int id,
+                                               @RequestBody Credit credit) throws CreditNotFoundException {
+        Credit updatedCredit = creditService.updateCredit(id, credit);
+        return new ResponseEntity<>(updatedCredit, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCredit(@PathVariable int id) {
+        if (creditService.deleteCredit(id)) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+}
+
+package com.scb.axessspringboottraining.service;
+
+import com.scb.axessspringboottraining.entity.Customer;
+import com.scb.axessspringboottraining.exception.CustomerNotFoundException;
+import com.scb.axessspringboottraining.repository.CustomerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class CustomerService implements ICustomer {
+
+    @Autowired
+    private CustomerRepository repo;
+
+    @Override
+    public List<Customer> getAllCustomers() {
+        return repo.findAll();
+    }
+
+    @Override
+    public Customer getCustomerById(int id) throws CustomerNotFoundException {
+        return repo.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer with id " + id + " not found!"));
+    }
+
+    @Override
+    public Customer addCustomer(Customer customer) {
+        return repo.save(customer);
+    }
+
+    @Override
+    public Customer updateCustomer(int id, Customer customer) throws CustomerNotFoundException {
+        Customer existing = repo.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer with id " + id + " not found!"));
+
+        existing.setName(customer.getName());
+        existing.setEmail(customer.getEmail());
+        existing.setCredit(customer.getCredit()); // update credit if provided
+
+        return repo.save(existing);
+    }
+
+    @Override
+    public boolean deleteCustomer(int id) throws CustomerNotFoundException {
+        if (!repo.existsById(id)) {
+            throw new CustomerNotFoundException("Customer with id " + id + " not found while deletion!");
+        }
+        repo.deleteById(id);
+        return true;
+    }
+}
+
+package com.scb.axessspringboottraining.service;
+
+import com.scb.axessspringboottraining.entity.Credit;
+import com.scb.axessspringboottraining.exception.CreditNotFoundException;
+import com.scb.axessspringboottraining.repository.CreditRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class CreditService implements ICredit {
+
+    @Autowired
+    private CreditRepository repo;
+
+    @Override
+    public Credit addCredit(Credit credit) {
+        return repo.save(credit);
+    }
+
+    @Override
+    public List<Credit> getAllCredits() {
+        return repo.findAll();
+    }
+
+    @Override
+    public Credit getCreditById(int id) throws CreditNotFoundException {
+        return repo.findById(id)
+                .orElseThrow(() -> new CreditNotFoundException("Credit card with id " + id + " not found!"));
+    }
+
+    @Override
+    public Credit updateCredit(int id, Credit updatedCredit) throws CreditNotFoundException {
+        Credit existing = repo.findById(id)
+                .orElseThrow(() -> new CreditNotFoundException("Credit card with id " + id + " not found!"));
+
+        existing.setCardNo(updatedCredit.getCardNo());
+        existing.setCustomer(updatedCredit.getCustomer());
+
+        return repo.save(existing);
+    }
+
+    @Override
+    public boolean deleteCredit(int id) {
+        if (repo.existsById(id)) {
+            repo.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+}
